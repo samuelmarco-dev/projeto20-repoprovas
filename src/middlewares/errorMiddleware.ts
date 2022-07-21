@@ -28,6 +28,10 @@ function unauthorized(err: ThrowError){
 
 function notFound(err: ThrowError){
     if(err.type === 'UserNotFound') return true;
+    if(err.type === 'CategoryNotFound') return true;
+    if(err.type === 'DisciplineNotFound') return true;
+    if(err.type === 'TeacherNotFound') return true;
+    if(err.type === 'TeacherDisciplineNotFound') return true;
 
     return false;
 }
