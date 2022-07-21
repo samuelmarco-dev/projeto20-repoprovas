@@ -20,6 +20,8 @@ export default function handleError(err, req: Request, res: Response, next: Next
 
 function unauthorized(err: ThrowError){
     if(err.type === 'InvalidPassword') return true;
+    if(err.type === 'InvalidToken') return true;
+    if(err.type === 'TokenExpired') return true;
 
     return false;
 }

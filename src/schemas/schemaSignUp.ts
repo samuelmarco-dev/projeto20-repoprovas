@@ -6,9 +6,9 @@ export interface UserData extends UserLogin {
     confirmPassword: string;
 }
 const schemaSignUp: joi.ObjectSchema<UserData> = joi.object({
-    email: joi.string().email().required(),
-    password: joi.string().required(),
-    confirmPassword: joi.string().valid(joi.ref("password")).required()
+    email: joi.string().email().required().trim(),
+    password: joi.string().required().trim(),
+    confirmPassword: joi.string().valid(joi.ref("password")).required().trim()
 });
 
 export default schemaSignUp;

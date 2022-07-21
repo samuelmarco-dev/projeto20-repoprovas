@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 import { User } from '@prisma/client';
 import { UserData, UserLogin } from './../schemas/schemaSignUp.js';
+import { userFoundInDatabase } from '../utils/userFunctions.js';
+import { generateJsonWebToken } from '../utils/jwtFunctions.js';
 import * as userRepository from "../repositories/userRepository.js";
 
 async function createUser(user: UserData){
@@ -25,10 +26,6 @@ async function createUser(user: UserData){
     await userRepository.createUser({ email, password: encryptedPassword });
 }
 
-async function userFoundInDatabase(email: string){
-    return await userRepository.findUserByEmail(email);
-}
-
 async function createLoginUser(user: UserLogin){
     const { email, password } = user;
 
@@ -41,7 +38,7 @@ async function createLoginUser(user: UserLogin){
     }
 
     await verificationPassword(password, userFound);
-    return generateJsonWebToken(userFound);
+    return await generateJsonWebToken(userFound);
 }
 
 async function verificationPassword(password: string, user: User){
@@ -52,16 +49,6 @@ async function verificationPassword(password: string, user: User){
         message: 'Password is invalid'
     }
     return;
-}
-
-function generateJsonWebToken(user: User){
-    const secret = process.env.JWT_SECRET;
-    const validity = { expiresIn: 10800 };
-    const token = jwt.sign({
-        id: user.id
-    }, secret, validity);
-
-    return token;
 }
 
 const authService = {
