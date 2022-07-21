@@ -25,6 +25,8 @@ function unauthorized(err: ThrowError){
 }
 
 function notFound(err: ThrowError){
+    if(err.type === 'UserNotFound') return true;
+
     return false;
 }
 

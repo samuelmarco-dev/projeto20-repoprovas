@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { UserData } from './../schemas/schemaSignUp.js';
+import { UserData, UserLogin } from './../schemas/schemaSignUp.js';
 import authService from "../services/authService.js";
 
 export async function createSignUp(req: Request, res: Response){
@@ -12,5 +12,9 @@ export async function createSignUp(req: Request, res: Response){
 }
 
 export async function createSignIn(req: Request, res: Response){
+    const { email, password }: UserLogin = req.body;
+    if(!email || !password) return res.sendStatus(400);
 
+    const token = await authService.createLoginUser({ email, password });
+    res.status(200).send({ token });
 }

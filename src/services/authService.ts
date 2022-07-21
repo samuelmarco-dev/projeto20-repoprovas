@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-import { UserData } from './../schemas/schemaSignUp.js';
+import { User } from '@prisma/client';
+import { UserData, UserLogin } from './../schemas/schemaSignUp.js';
 import * as userRepository from "../repositories/userRepository.js";
 
 async function createUser(user: UserData){
@@ -12,7 +14,6 @@ async function createUser(user: UserData){
     }
 
     const userFound = await userFoundInDatabase(email);
-    console.log('userFound', userFound);
     if(userFound) throw{
         type: 'UserAlreadyExists',
         message: 'User already exists'
@@ -28,8 +29,44 @@ async function userFoundInDatabase(email: string){
     return await userRepository.findUserByEmail(email);
 }
 
+async function createLoginUser(user: UserLogin){
+    const { email, password } = user;
+
+    const userFound = await userFoundInDatabase(email);
+    console.log('userFound', userFound);
+
+    if(!userFound) throw{
+        type: 'UserNotFound',
+        message: 'User not found'
+    }
+
+    await verificationPassword(password, userFound);
+    return generateJsonWebToken(userFound);
+}
+
+async function verificationPassword(password: string, user: User){
+    const confirmation = await bcrypt.compare(password, user.password);
+
+    if(!confirmation) throw{
+        type: 'InvalidPassword',
+        message: 'Password is invalid'
+    }
+    return;
+}
+
+function generateJsonWebToken(user: User){
+    const secret = process.env.JWT_SECRET;
+    const validity = { expiresIn: 10800 };
+    const token = jwt.sign({
+        id: user.id
+    }, secret, validity);
+
+    return token;
+}
+
 const authService = {
-    createUser
+    createUser,
+    createLoginUser
 }
 
 export default authService;
