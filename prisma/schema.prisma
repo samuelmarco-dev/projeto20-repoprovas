@@ -2,10 +2,88 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    password  String
+    createdAt DateTime @default(now())
+
+    @@map("users")
+}
+
+model Test {
+    id                  Int      @id @default(autoincrement())
+    name                String
+    pdfUrl              String
+    categoryId          Int
+    teacherDisciplineId Int
+    createdAt           DateTime @default(now())
+
+    category         Category          @relation(fields: [categoryId], references: [id])
+    teacherDiscipline TeacherDiscipline @relation(fields: [teacherDisciplineId], references: [id])
+
+    @@map("tests")
+}
+
+model Category {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    createdAt DateTime @default(now())
+
+    tests Test[]
+
+    @@map("categories")
+}
+
+model TeacherDiscipline {
+    id           Int      @id @default(autoincrement())
+    teacherId    Int
+    disciplineId Int
+    createdAt    DateTime @default(now())
+
+    teacher    Teacher    @relation(fields: [teacherId], references: [id])
+    discipline Discipline @relation(fields: [disciplineId], references: [id])
+    tests Test[]
+
+    @@map("teachersDisciplines")
+}
+
+model Teacher {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    createdAt DateTime @default(now())
+
+    teacherDisciplines TeacherDiscipline[]
+
+    @@map("teachers")
+}
+
+model Discipline {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    termId    Int
+    createdAt DateTime @default(now())
+
+    term Term @relation(fields: [termId], references: [id])
+    teacherDisciplines TeacherDiscipline[]
+
+    @@map("disciplines")
+}
+
+model Term {
+    id        Int      @id @default(autoincrement())
+    number    Int      @unique
+    createdAt DateTime @default(now())
+
+    disciplines Discipline[]
+
+    @@map("terms")
 }
