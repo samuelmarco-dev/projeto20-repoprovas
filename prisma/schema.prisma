@@ -1,91 +1,82 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id        Int      @id @default(autoincrement())
-    email     String   @unique
-    password  String
-    createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
 
-    @@map("users")
+  @@map("users")
 }
 
 model Test {
-    id                  Int      @id @default(autoincrement())
-    name                String
-    pdfUrl              String
-    categoryId          Int
-    teacherDisciplineId Int
-    createdAt           DateTime @default(now())
+  id                  Int               @id @default(autoincrement())
+  name                String
+  pdfUrl              String
+  categoryId          Int
+  teacherDisciplineId Int
+  createdAt           DateTime          @default(now())
+  category            Category          @relation(fields: [categoryId], references: [id])
+  teacherDiscipline   TeacherDiscipline @relation(fields: [teacherDisciplineId], references: [id])
 
-    category         Category          @relation(fields: [categoryId], references: [id])
-    teacherDiscipline TeacherDiscipline @relation(fields: [teacherDisciplineId], references: [id])
-
-    @@map("tests")
-    @@unique([name, categoryId, teacherDisciplineId])
+  @@unique([name, categoryId, teacherDisciplineId])
+  @@map("tests")
 }
 
 model Category {
-    id        Int      @id @default(autoincrement())
-    name      String   @unique
-    createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  tests     Test[]
 
-    tests Test[]
-
-    @@map("categories")
+  @@map("categories")
 }
 
 model TeacherDiscipline {
-    id           Int      @id @default(autoincrement())
-    teacherId    Int
-    disciplineId Int
-    createdAt    DateTime @default(now())
+  id           Int        @id @default(autoincrement())
+  teacherId    Int
+  disciplineId Int
+  createdAt    DateTime   @default(now())
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  teacher      Teacher    @relation(fields: [teacherId], references: [id])
+  tests        Test[]
 
-    teacher    Teacher    @relation(fields: [teacherId], references: [id])
-    discipline Discipline @relation(fields: [disciplineId], references: [id])
-    tests Test[]
-
-    @@map("teachersDisciplines")
-    @@unique([teacherId, disciplineId])
+  @@unique([teacherId, disciplineId])
+  @@map("teachersDisciplines")
 }
 
 model Teacher {
-    id        Int      @id @default(autoincrement())
-    name      String   @unique
-    createdAt DateTime @default(now())
+  id                 Int                 @id @default(autoincrement())
+  name               String              @unique
+  createdAt          DateTime            @default(now())
+  teacherDisciplines TeacherDiscipline[]
 
-    teacherDisciplines TeacherDiscipline[]
-
-    @@map("teachers")
+  @@map("teachers")
 }
 
 model Discipline {
-    id        Int      @id @default(autoincrement())
-    name      String   @unique
-    termId    Int
-    createdAt DateTime @default(now())
+  id                 Int                 @id @default(autoincrement())
+  name               String              @unique
+  termId             Int
+  createdAt          DateTime            @default(now())
+  term               Term                @relation(fields: [termId], references: [id])
+  teacherDisciplines TeacherDiscipline[]
 
-    term Term @relation(fields: [termId], references: [id])
-    teacherDisciplines TeacherDiscipline[]
-
-    @@map("disciplines")
+  @@map("disciplines")
 }
 
 model Term {
-    id        Int      @id @default(autoincrement())
-    number    Int      @unique
-    createdAt DateTime @default(now())
+  id          Int          @id @default(autoincrement())
+  number      Int          @unique
+  createdAt   DateTime     @default(now())
+  disciplines Discipline[]
 
-    disciplines Discipline[]
-
-    @@map("terms")
+  @@map("terms")
 }

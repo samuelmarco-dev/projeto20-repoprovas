@@ -3,9 +3,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { User } from '@prisma/client';
-const secret = process.env.JWT_SECRET;
 
 export async function generateJsonWebToken(user: User){
+    const secret = process.env.JWT_SECRET;
     const validity = { expiresIn: 10800 };
     const token = jwt.sign({
         id: user.id
@@ -16,6 +16,7 @@ export async function generateJsonWebToken(user: User){
 
 export async function verifyToken(token: string){
     try {
+        const secret = process.env.JWT_SECRET;
         const verification = jwt.verify(token, secret);
         if(!verification) throw{
             type: "InvalidToken",

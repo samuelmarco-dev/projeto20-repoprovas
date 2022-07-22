@@ -5,7 +5,7 @@ import { verifyToken } from "../utils/jwtFunctions.js";
 export interface TokenPayload{
     id: number;
     iat: number;
-    expiresIn: number;
+    exp: number;
 }
 
 export default async function validationToken(req: Request, res: Response, next: NextFunction){

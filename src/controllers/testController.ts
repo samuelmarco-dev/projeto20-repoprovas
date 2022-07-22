@@ -19,3 +19,14 @@ export async function createTest(req: Request, res: Response){
     await testService.createTest({ name, pdfUrl, categoryId, disciplineId, teacherId });
     res.sendStatus(201);
 }
+
+export async function getTestsDiscipline(req: Request, res: Response){
+    const id: number = res.locals.id;
+    if(!id) return res.status(400).send('Missing data');
+
+    const user: User = await userFoundId(id);
+    if(!user) return res.status(404).send('User not found');
+
+    const testsDisciplines = await testService.getTestsDiscipline();
+    res.status(200).send(testsDisciplines);
+}
