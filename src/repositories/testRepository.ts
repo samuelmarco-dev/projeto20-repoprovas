@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 
 import prisma from "../config/database.js";
 import { TestData } from "../schemas/schemaTest.js";
+import { TestUnique } from '../services/testService.js';
 
 type TestRelation = Omit<TestData, "disciplineId" | "teacherId">
 interface TestInsert extends TestRelation{
@@ -13,6 +14,16 @@ export async function createTest(test: TestInsert){
         data: {
             ...test,
             createdAt: dayjs().format()
+        }
+    })
+}
+
+export async function findRelationUnique(test: TestUnique){
+    return await prisma.test.findFirst({
+        where: {
+            name: test.name,
+            teacherDisciplineId: test.teacherDisciplineId,
+            categoryId: test.categoryId
         }
     })
 }

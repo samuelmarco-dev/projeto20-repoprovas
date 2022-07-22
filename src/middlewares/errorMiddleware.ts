@@ -37,11 +37,14 @@ function notFound(err: ThrowError){
 }
 
 function badRequest(err: ThrowError){
+    if(err.type === 'MissingData') return true;
+
     return false;
 }
 
 function conflict(err: ThrowError){
     if(err.type === 'UserAlreadyExists') return true;
+    if(err.type === 'TestAlreadyExist') return true;
 
     return false;
 }
