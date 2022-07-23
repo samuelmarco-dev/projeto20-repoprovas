@@ -88,7 +88,7 @@ describe("POST /sign-in", ()=> {
 });
 
 describe("POST /test", ()=> {
-    it('create test with user token', async()=> {
+    it('create test with valid token', async()=> {
         const user = await userFactory.createUserOfAuthenticatedRoute();
         const test = generateTest();
 
@@ -102,7 +102,7 @@ describe("POST /test", ()=> {
         expect(response.status).toEqual(201);
     });
 
-    it('create test with user token expired', async()=> {
+    it('create test with user expired token', async()=> {
         const user = await userFactory.createUserOfAuthenticatedRoute();
         const test = generateTest();
 
@@ -116,7 +116,7 @@ describe("POST /test", ()=> {
         expect(response.status).toEqual(401);
     });
 
-    it('create test with user token invalid', async()=> {
+    it('create test with user invalid token', async()=> {
         const user = await userFactory.createUserOfAuthenticatedRoute();
         const test = generateTest();
 
@@ -173,13 +173,87 @@ describe("POST /test", ()=> {
     });
 });
 
-// describe("GET /test/discipline", ()=> {
+describe("GET /test/discipline", ()=> {
+    it('visualization of tests separated by discipline with valid token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
 
-// });
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
 
-// describe("GET /test/teacher", ()=> {
+        response = await supertest(app).get('/test/discipline').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(200);
+    });
 
-// });
+    it('visualization of tests separated by discipline with expired token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackTokenExpired();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).get('/test/discipline').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+
+    it('visualization of tests separated by discipline with invalid token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackInvalidToken();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).get('/test/discipline').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+});
+
+describe("GET /test/teacher", ()=> {
+    it('visualization of tests separated by teacher with valid token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).get('/test/teacher').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(200);
+    });
+
+    it('visualization of tests separated by teacher with expired token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackTokenExpired();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).get('/test/teacher').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+
+    it('visualization of tests separated by teacher with invalid token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackInvalidToken();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).get('/test/teacher').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+});
 
 afterAll(async()=> {
     await prisma.$disconnect();
