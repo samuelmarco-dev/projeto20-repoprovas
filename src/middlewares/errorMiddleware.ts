@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import chalk from 'chalk';
 
 interface ThrowError {
     type: string;
@@ -7,7 +6,6 @@ interface ThrowError {
 }
 
 export default function handleError(err, req: Request, res: Response, next: NextFunction){
-    console.log(chalk.red('Error: ', err));
     if(err){
         if(badRequest(err)) return res.status(400).send(err.message);
         if(unauthorized(err)) return res.status(401).send(err.message);

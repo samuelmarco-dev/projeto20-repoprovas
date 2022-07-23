@@ -5,7 +5,8 @@ async function createTerms(){
         data: [
             { number: 1 }, { number: 2 }, { number: 3 },
             { number: 4 }, { number: 5 }, { number: 6 }
-        ]
+        ],
+        skipDuplicates: true
     });
 }
 
@@ -13,7 +14,8 @@ async function createCategories(){
     await prisma.category.createMany({
         data: [
             { name: 'Projeto' }, { name: 'Prática' }, { name: 'Recuperação' }
-        ]
+        ],
+        skipDuplicates: true
     })
 }
 
@@ -22,7 +24,8 @@ async function createTeachers(){
         data: [
             { name: 'Diego Pinho'},
             { name: 'Bruna Hamori'}
-        ]
+        ],
+        skipDuplicates: true
     })
 }
 
@@ -35,7 +38,8 @@ async function createDisciplines(){
             { name: 'Humildade', termId: 1 },
             { name: 'Planejamento', termId: 2 },
             { name: 'Autoconfiança', termId: 3 }
-        ]
+        ],
+        skipDuplicates: true
     })
 }
 
@@ -48,7 +52,8 @@ async function createTeachersDisciplines(){
             { teacherId: 2, disciplineId: 4 },
             { teacherId: 2, disciplineId: 5 },
             { teacherId: 2, disciplineId: 6 }
-        ]
+        ],
+        skipDuplicates: true
     })
 }
 

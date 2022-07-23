@@ -30,8 +30,6 @@ async function createLoginUser(user: UserLogin){
     const { email, password } = user;
 
     const userFound = await userFoundInDatabase(email);
-    console.log('userFound', userFound);
-
     if(!userFound) throw{
         type: 'UserNotFound',
         message: 'User not found'
