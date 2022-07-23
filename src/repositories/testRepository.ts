@@ -61,3 +61,30 @@ export async function findTestsDiscipline(){
         }
     })
 }
+
+export async function findTestsTeacher(){
+    return await prisma.teacher.findMany({
+        select: {
+            id: true,
+            name: true,
+            teacherDisciplines: {
+                select: {
+                    id: true,
+                    teacherId: true,
+                    disciplineId: true,
+                    discipline: true,
+                    tests: {
+                        select: {
+                            id: true,
+                            name: true,
+                            pdfUrl: true,
+                            categoryId: true,
+                            teacherDisciplineId: true,
+                            category: true
+                        }
+                    }
+                }
+            }
+        }
+    })
+}

@@ -70,9 +70,14 @@ async function getTestsDiscipline(){
     return await testRepository.findTestsDiscipline();
 }
 
+async function getTestsTeacher(){
+    return await testRepository.findTestsTeacher();
+}
+
 const testService = {
     createTest,
-    getTestsDiscipline
+    getTestsDiscipline,
+    getTestsTeacher
 }
 
 export default testService;
