@@ -10,8 +10,23 @@ function generateEmailAndPassword(){
     }
 }
 
+async function createUserOfAuthenticatedRoute(){
+    const [email, password] = [faker.internet.email(), faker.internet.password()];
+    const salt = await bcrypt.genSalt(10);
+    const encryptedPassword = await bcrypt.hash(password, salt);
+
+    await prisma.user.create({
+        data: {
+            email, password: encryptedPassword
+        }
+    });
+
+    return { email, password }
+}
+
 const userFactory = {
-    generateEmailAndPassword
+    generateEmailAndPassword,
+    createUserOfAuthenticatedRoute
 };
 
 export default userFactory;

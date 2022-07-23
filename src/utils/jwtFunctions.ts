@@ -25,7 +25,7 @@ export async function verifyToken(token: string){
 
         return verification;
     } catch (error) {
-        if(error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") throw{
+        if(error.name === "TokenExpiredError") throw{
             type: "TokenExpired",
             message: "Token expired"
         }

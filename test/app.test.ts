@@ -3,6 +3,8 @@ import supertest from "supertest";
 import prisma from "../src/config/database.js";
 import app from "../src/app.js";
 import userFactory from "./factories/userFactory.js";
+import { generateTest } from "./factories/testFactory.js";
+import { giveBackInvalidToken, giveBackTokenExpired } from "./factories/tokenFactory.js";
 
 beforeAll(async()=> {
     await prisma.$executeRaw`TRUNCATE TABLE "users";`;
@@ -85,9 +87,91 @@ describe("POST /sign-in", ()=> {
     });
 });
 
-// describe("POST /test", ()=> {
+describe("POST /test", ()=> {
+    it('create test with user token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+        const test = generateTest();
 
-// });
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).post('/test').send(test).set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(201);
+    });
+
+    it('create test with user token expired', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+        const test = generateTest();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackTokenExpired();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).post('/test').send(test).set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+
+    it('create test with user token invalid', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+        const test = generateTest();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackInvalidToken();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).post('/test').send(test).set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+
+    it('create test with categoryId not registered', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+        const test = generateTest();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).post('/test').send({ ...test, categoryId: 99 }).set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(404);
+    });
+
+    it('create test with disciplineId not registered', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+        const test = generateTest();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).post('/test').send({ ...test, disciplineId: 99 }).set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(404);
+    });
+
+    it('create test with teacherId not registered', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+        const test = generateTest();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).post('/test').send({ ...test, teacherId: 99 }).set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(404);
+    });
+});
 
 // describe("GET /test/discipline", ()=> {
 
