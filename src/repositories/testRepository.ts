@@ -30,14 +30,32 @@ export async function findRelationUnique(test: TestUnique){
 
 export async function findTestsDiscipline(){
     return await prisma.term.findMany({
-        where: { },
         select: {
-            id: true, number: true,
+            id: true,
+            number: true,
             disciplines: {
                 select: {
                     id: true,
                     name: true,
-                    termId: true
+                    termId: true,
+                    teacherDisciplines: {
+                        select: {
+                            id: true,
+                            teacherId: true,
+                            disciplineId: true,
+                            teacher: true,
+                            tests: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    pdfUrl: true,
+                                    categoryId: true,
+                                    teacherDisciplineId: true,
+                                    category: true
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

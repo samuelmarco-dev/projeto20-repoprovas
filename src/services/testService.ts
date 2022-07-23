@@ -67,8 +67,7 @@ async function findTestExistOrNot(test: TestUnique){
 }
 
 async function getTestsDiscipline(){
-    const testsFound = await testRepository.findTestsDiscipline();
-    console.log('Testes Encontrados na query', testsFound);
+    return await testRepository.findTestsDiscipline();
 }
 
 const testService = {
