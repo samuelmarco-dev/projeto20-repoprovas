@@ -1,9 +1,10 @@
 import supertest from "supertest";
+import { faker } from "@faker-js/faker";
 
 import prisma from "../src/config/database.js";
 import app from "../src/app.js";
 import userFactory from "./factories/userFactory.js";
-import { generateTest } from "./factories/testFactory.js";
+import { generateTest, generateTestOfConflict } from "./factories/testFactory.js";
 import { giveBackInvalidToken, giveBackTokenExpired } from "./factories/tokenFactory.js";
 
 beforeAll(async()=> {
@@ -100,6 +101,31 @@ describe("POST /test", ()=> {
 
         response = await supertest(app).post('/test').send(test).set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(201);
+    });
+
+    it('given existing test, report conflict', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+        const test = await generateTestOfConflict();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).post('/test').send({
+            name: 'TrackIt',
+            pdfUrl: faker.internet.url(),
+            categoryId: 1,
+            disciplineId: 3,
+            teacherId: 1
+        }).set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(409);
+
+        await prisma.$executeRaw`
+            DELETE FROM "tests" WHERE "name"= '${test.name}' AND "categoryId"= ${test.categoryId}
+            AND "teacherDisciplineId"= ${test.teacherDisciplineId} AND "pdfUrl"= '${test.pdfUrl}';
+        `;
     });
 
     it('create test with user expired token', async()=> {
