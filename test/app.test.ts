@@ -194,7 +194,20 @@ describe("POST /test", ()=> {
     });
 });
 
-describe("GET /test/discipline", ()=> {
+describe("GET /tests?groupBy", ()=> {
+    it('visualization of tests without parameter', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).get('/tests').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(400);
+    });
+
     it('visualization of tests separated by discipline with valid token', async()=> {
         const user = await userFactory.createUserOfAuthenticatedRoute();
 
@@ -204,38 +217,10 @@ describe("GET /test/discipline", ()=> {
         const token = response.body.token;
         expect(token).not.toBeNull();
 
-        response = await supertest(app).get('/test/discipline').set('Authorization', `Bearer ${token}`);
+        response = await supertest(app).get('/tests?groupBy=disciplines').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
     });
 
-    it('visualization of tests separated by discipline with expired token', async()=> {
-        const user = await userFactory.createUserOfAuthenticatedRoute();
-
-        let response = await supertest(app).post('/sign-in').send({
-            email: user.email, password: user.password
-        });
-        const token = giveBackTokenExpired();
-        expect(token.token).not.toBeNull();
-
-        response = await supertest(app).get('/test/discipline').set('Authorization', `Bearer ${token}`);
-        expect(response.status).toEqual(401);
-    });
-
-    it('visualization of tests separated by discipline with invalid token', async()=> {
-        const user = await userFactory.createUserOfAuthenticatedRoute();
-
-        let response = await supertest(app).post('/sign-in').send({
-            email: user.email, password: user.password
-        });
-        const token = giveBackInvalidToken();
-        expect(token.token).not.toBeNull();
-
-        response = await supertest(app).get('/test/discipline').set('Authorization', `Bearer ${token}`);
-        expect(response.status).toEqual(401);
-    });
-});
-
-describe("GET /test/teacher", ()=> {
     it('visualization of tests separated by teacher with valid token', async()=> {
         const user = await userFactory.createUserOfAuthenticatedRoute();
 
@@ -245,11 +230,11 @@ describe("GET /test/teacher", ()=> {
         const token = response.body.token;
         expect(token).not.toBeNull();
 
-        response = await supertest(app).get('/test/teacher').set('Authorization', `Bearer ${token}`);
+        response = await supertest(app).get('/tests?groupBy=teachers').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
     });
 
-    it('visualization of tests separated by teacher with expired token', async()=> {
+    it('visualization of tests with expired token', async()=> {
         const user = await userFactory.createUserOfAuthenticatedRoute();
 
         let response = await supertest(app).post('/sign-in').send({
@@ -258,11 +243,11 @@ describe("GET /test/teacher", ()=> {
         const token = giveBackTokenExpired();
         expect(token.token).not.toBeNull();
 
-        response = await supertest(app).get('/test/teacher').set('Authorization', `Bearer ${token}`);
+        response = await supertest(app).get('/tests?groupBy=disciplines').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(401);
     });
 
-    it('visualization of tests separated by teacher with invalid token', async()=> {
+    it('visualization of tests with invalid token', async()=> {
         const user = await userFactory.createUserOfAuthenticatedRoute();
 
         let response = await supertest(app).post('/sign-in').send({
@@ -271,7 +256,7 @@ describe("GET /test/teacher", ()=> {
         const token = giveBackInvalidToken();
         expect(token.token).not.toBeNull();
 
-        response = await supertest(app).get('/test/teacher').set('Authorization', `Bearer ${token}`);
+        response = await supertest(app).get('/tests?groupBy=disciplines').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(401);
     });
 });
