@@ -20,24 +20,16 @@ export async function createTest(req: Request, res: Response){
     res.sendStatus(201);
 }
 
-export async function getTestsDiscipline(req: Request, res: Response){
+export async function getTestGroupBy(req: Request, res: Response){
+    const { groupBy } = req.query;
+    if(!groupBy) return res.status(400).send('Missing data');
+
     const id: number = res.locals.id;
     if(!id) return res.status(400).send('Missing data');
 
     const user: User = await userFoundId(id);
     if(!user) return res.status(404).send('User not found');
 
-    const testsDisciplines = await testService.getTestsDiscipline();
-    res.status(200).send(testsDisciplines);
-}
-
-export async function getTestsTeacher(req: Request, res: Response){
-    const id: number = res.locals.id;
-    if(!id) return res.status(400).send('Missing data');
-
-    const user: User = await userFoundId(id);
-    if(!user) return res.status(404).send('User not found');
-
-    const testsTeachers = await testService.getTestsTeacher();
-    res.status(200).send(testsTeachers);
+    const testsSeach = await testService.getTestsGroupBy(groupBy as string);
+    res.status(200).send(testsSeach);
 }

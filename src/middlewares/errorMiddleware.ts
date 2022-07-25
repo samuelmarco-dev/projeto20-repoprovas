@@ -36,6 +36,7 @@ function notFound(err: ThrowError){
 
 function badRequest(err: ThrowError){
     if(err.type === 'MissingData') return true;
+    if(err.type === 'InvalidParams') return true;
 
     return false;
 }

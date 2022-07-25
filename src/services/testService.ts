@@ -66,18 +66,22 @@ async function findTestExistOrNot(test: TestUnique){
     }
 }
 
-async function getTestsDiscipline(){
-    return await testRepository.findTestsDiscipline();
-}
-
-async function getTestsTeacher(){
-    return await testRepository.findTestsTeacher();
+async function getTestsGroupBy(params: string) {
+    if(params === 'disciplines'){
+        return await testRepository.findTestsDiscipline();
+    }
+    if(params === 'teachers'){
+        return await testRepository.findTestsTeacher();
+    }
+    throw{
+        type: "InvalidParams",
+        message: "Invalid params"
+    }
 }
 
 const testService = {
     createTest,
-    getTestsDiscipline,
-    getTestsTeacher
+    getTestsGroupBy
 }
 
 export default testService;
