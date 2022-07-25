@@ -8,7 +8,7 @@ import { generateTest, generateTestOfConflict } from "./factories/testFactory.js
 import { giveBackInvalidToken, giveBackTokenExpired } from "./factories/tokenFactory.js";
 
 beforeAll(async()=> {
-    await prisma.$executeRaw`TRUNCATE TABLE "users";`;
+    await prisma.$executeRaw`TRUNCATE TABLE users;`;
 });
 
 describe("POST /sign-up", ()=> {
@@ -121,11 +121,6 @@ describe("POST /test", ()=> {
             teacherId: 1
         }).set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(409);
-
-        await prisma.$executeRaw`
-            DELETE FROM "tests" WHERE "name"= '${test.name}' AND "categoryId"= ${test.categoryId}
-            AND "teacherDisciplineId"= ${test.teacherDisciplineId} AND "pdfUrl"= '${test.pdfUrl}';
-        `;
     });
 
     it('create test with user expired token', async()=> {
@@ -282,5 +277,13 @@ describe("GET /test/teacher", ()=> {
 });
 
 afterAll(async()=> {
+    const test = {
+        name: 'TrackIt',
+        categoryId: 1,
+        teacherDisciplineId: 3
+    }
+    await prisma.$executeRaw`
+        DELETE FROM "tests" WHERE "name"= ${test.name};
+    `;
     await prisma.$disconnect();
 });
