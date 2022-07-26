@@ -5,3 +5,7 @@ export async function findCategoryById(id: number){
         where: { id }
     })
 }
+
+export async function findAllCategories(){
+    return await prisma.category.findMany();
+}

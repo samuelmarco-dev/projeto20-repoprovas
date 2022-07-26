@@ -31,5 +31,5 @@ export async function getTestGroupBy(req: Request, res: Response){
     if(!user) return res.status(404).send('User not found');
 
     const testsSeach = await testService.getTestsGroupBy(groupBy as string);
-    res.status(200).send(testsSeach);
+    res.status(200).send({ tests: testsSeach });
 }

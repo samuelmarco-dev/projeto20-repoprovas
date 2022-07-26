@@ -261,6 +261,47 @@ describe("GET /tests?groupBy", ()=> {
     });
 });
 
+describe("GET /categories", ()=> {
+    it('visualization of categories with valid token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = response.body.token;
+        expect(token).not.toBeNull();
+
+        response = await supertest(app).get('/categories').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(200);
+    });
+
+    it('visualization of categories with expired token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackTokenExpired();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).get('/categories').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+
+    it('visualization of categories with invalid token', async()=> {
+        const user = await userFactory.createUserOfAuthenticatedRoute();
+
+        let response = await supertest(app).post('/sign-in').send({
+            email: user.email, password: user.password
+        });
+        const token = giveBackInvalidToken();
+        expect(token.token).not.toBeNull();
+
+        response = await supertest(app).get('/categories').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+})
+
 afterAll(async()=> {
     const test = {
         name: 'TrackIt',
