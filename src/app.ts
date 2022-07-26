@@ -7,7 +7,7 @@ import morgan from 'morgan';
 import routes from './routers/index.js';
 import handleError from './middlewares/errorMiddleware.js';
 
-const app = express();
+export const app = express();
 app.use(json());
 app.use(cors());
 app.use(helmet());
@@ -15,5 +15,3 @@ app.use(morgan('dev'));
 
 app.use(routes);
 app.use(handleError);
-
-export default app;

@@ -2,7 +2,7 @@ import supertest from "supertest";
 import { faker } from "@faker-js/faker";
 
 import prisma from "../src/config/database.js";
-import app from "../src/app.js";
+import { app } from "../src/app.js";
 import userFactory from "./factories/userFactory.js";
 import { generateTest, generateTestOfConflict } from "./factories/testFactory.js";
 import { giveBackInvalidToken, giveBackTokenExpired } from "./factories/tokenFactory.js";
